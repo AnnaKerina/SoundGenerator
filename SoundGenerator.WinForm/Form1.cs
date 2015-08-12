@@ -38,5 +38,11 @@ namespace SoundGenerator.WinForm
                 _waveOut = null;
             }
         }
+
+        private void Mixer()
+        {
+            var waveChannel32 = new WaveChannel32[4]; 
+
+        }
     }
 }
