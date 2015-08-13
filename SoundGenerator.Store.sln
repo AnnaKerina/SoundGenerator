@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundGenerator.Store", "Sou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundGenerator.WinForm", "SoundGenerator.WinForm\SoundGenerator.WinForm.csproj", "{1D76E7F1-CB24-4912-A05C-4FAFD0BC0581}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagesConverter.Store", "ImageConverter.Store\ImagesConverter.Store.csproj", "{B316AE47-91E8-4CCC-97A0-0A6660BB9512}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1D76E7F1-CB24-4912-A05C-4FAFD0BC0581}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D76E7F1-CB24-4912-A05C-4FAFD0BC0581}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D76E7F1-CB24-4912-A05C-4FAFD0BC0581}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B316AE47-91E8-4CCC-97A0-0A6660BB9512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B316AE47-91E8-4CCC-97A0-0A6660BB9512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B316AE47-91E8-4CCC-97A0-0A6660BB9512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B316AE47-91E8-4CCC-97A0-0A6660BB9512}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

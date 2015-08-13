@@ -1,6 +1,4 @@
-﻿using System;
-using NAudio;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 
 namespace SoundGenerator.Store
 {
