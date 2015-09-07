@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using NAudio.Wave;
 using SoundGenerator.Store;
@@ -42,11 +42,26 @@ namespace SoundGenerator.WinForm
             var sineWaveProvider = new SinWaveProvider32();
             sineWaveProvider.SetWaveFormat(16000, 1); // 16kHz mono
             return sineWaveProvider;
+        }        
+        
+        private SinWaveProvider32 Signal2()
+        {
+            var sineWaveProvider = new SinWaveProvider32 {Amplitude = 0.5f};
+            sineWaveProvider.SetWaveFormat(16000, 1); // 16kHz mono
+            return sineWaveProvider;
         }
 
         private void ConvertImage_Click(object sender, EventArgs e)
         {
+            _waveOut = new WaveOut();
+            _waveOut.Init(MultiplexingWave());
+            _waveOut.Play();
+        }
 
+        private MultiplexingWaveProvider32 MultiplexingWave()
+        {
+            var inputs = new List<IWaveProvider> {Signal(), Signal2()};
+            return new MultiplexingWaveProvider32(inputs, 2);
         }
     }
 }

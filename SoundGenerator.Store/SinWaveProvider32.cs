@@ -22,7 +22,7 @@ namespace SoundGenerator.Store
             var sampleRate = WaveFormat.SampleRate;
             for (var i = 0; i < count; i++)
             {
-                buffer[i + offset] = CreateSignalsLine(sampleRate);
+                buffer[i + offset] = Signal(sampleRate);
                 sample++;
                 if (sample >= sampleRate)
                 {

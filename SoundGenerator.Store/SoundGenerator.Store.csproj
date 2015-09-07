@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MultiplexingWaveProvider32.cs" />
     <Compile Include="SinWaveProvider32.cs" />
     <Compile Include="WaveProvider32.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
