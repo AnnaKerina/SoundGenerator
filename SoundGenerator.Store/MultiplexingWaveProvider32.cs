@@ -7,21 +7,21 @@ namespace SoundGenerator.Store
 {
     public class MultiplexingWaveProvider32 : MultiplexingWaveProvider
     {
-        private readonly IList<IWaveProvider> inputs;
-        private readonly WaveFormat waveFormat;
-        private readonly int outputChannelCount;
-        private readonly int inputChannelCount;
-        private readonly List<int> mappings;
-        private readonly int bytesPerSample;
-        private byte[] inputBuffer;
+        private readonly IList<IWaveProvider> _inputs;
+        private readonly WaveFormat _waveFormat;
+        private readonly int _outputChannelCount;
+        private readonly int _inputChannelCount;
+        private readonly List<int> _mappings;
+        private readonly int _bytesPerSample;
+        private byte[] _inputBuffer;
 
         public MultiplexingWaveProvider32(IEnumerable<IWaveProvider> inputs, int numberOfOutputChannels)
             : base(inputs, numberOfOutputChannels)
         {
-            this.inputs = new List<IWaveProvider>(inputs);
-            this.outputChannelCount = numberOfOutputChannels;
+            this._inputs = new List<IWaveProvider>(_inputs);
+            this._outputChannelCount = numberOfOutputChannels;
 
-            if (this.inputs.Count == 0)
+            if (this._inputs.Count == 0)
             {
                 throw new ArgumentException("You must provide at least one input");
             }
@@ -29,18 +29,18 @@ namespace SoundGenerator.Store
             {
                 throw new ArgumentException("You must provide at least one output");
             }
-            foreach (var input in this.inputs)
+            foreach (var input in this._inputs)
             {
-                if (this.waveFormat == null)
+                if (this._waveFormat == null)
                 {
                     if (input.WaveFormat.Encoding == WaveFormatEncoding.Pcm)
                     {
-                        this.waveFormat = new WaveFormat(input.WaveFormat.SampleRate, input.WaveFormat.BitsPerSample,
+                        this._waveFormat = new WaveFormat(input.WaveFormat.SampleRate, input.WaveFormat.BitsPerSample,
                             numberOfOutputChannels);
                     }
                     else if (input.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
                     {
-                        this.waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(input.WaveFormat.SampleRate,
+                        this._waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(input.WaveFormat.SampleRate,
                             numberOfOutputChannels);
                     }
                     else
@@ -50,55 +50,55 @@ namespace SoundGenerator.Store
                 }
                 else
                 {
-                    if (input.WaveFormat.BitsPerSample != this.waveFormat.BitsPerSample)
+                    if (input.WaveFormat.BitsPerSample != this._waveFormat.BitsPerSample)
                     {
                         throw new ArgumentException("All inputs must have the same bit depth");
                     }
-                    if (input.WaveFormat.SampleRate != this.waveFormat.SampleRate)
+                    if (input.WaveFormat.SampleRate != this._waveFormat.SampleRate)
                     {
                         throw new ArgumentException("All inputs must have the same sample rate");
                     }
                 }
-                inputChannelCount += input.WaveFormat.Channels;
+                _inputChannelCount += input.WaveFormat.Channels;
             }
-            this.bytesPerSample = this.waveFormat.BitsPerSample/8;
+            this._bytesPerSample = this._waveFormat.BitsPerSample/8;
 
             var mappings = new List<int>();
-            for (int n = 0; n < outputChannelCount; n++)
+            for (int n = 0; n < _outputChannelCount; n++)
             {
-                mappings.Add(n%inputChannelCount);
+                mappings.Add(n%_inputChannelCount);
             }
         }
 
 
         public new int Read(byte[] buffer, int offset, int count)
         {
-            var outputBytesPerFrame = bytesPerSample*outputChannelCount;
+            var outputBytesPerFrame = _bytesPerSample*_outputChannelCount;
             var sampleFramesRequested = count/outputBytesPerFrame;
             var inputOffset = 0;
             var sampleFramesRead = 0;
             // now we must read from all inputs, even if we don't need their data, so they stay in sync
-            foreach (var input in inputs)
+            foreach (var input in _inputs)
             {
-                var inputBytesPerFrame = bytesPerSample*input.WaveFormat.Channels;
+                var inputBytesPerFrame = _bytesPerSample*input.WaveFormat.Channels;
                 var bytesRequired = sampleFramesRequested*inputBytesPerFrame;
-                inputBuffer = BufferHelpers.Ensure(this.inputBuffer, bytesRequired);
-                var bytesRead = input.Read(inputBuffer, 0, bytesRequired);
+                _inputBuffer = BufferHelpers.Ensure(this._inputBuffer, bytesRequired);
+                var bytesRead = input.Read(_inputBuffer, 0, bytesRequired);
                 sampleFramesRead = Math.Max(sampleFramesRead, bytesRead/inputBytesPerFrame);
 
                 for (var n = 0; n < input.WaveFormat.Channels; n++)
                 {
                     var inputIndex = inputOffset + n;
-                    for (var outputIndex = 0; outputIndex < outputChannelCount; outputIndex++)
+                    for (var outputIndex = 0; outputIndex < _outputChannelCount; outputIndex++)
                     {
-                        if (mappings[outputIndex] == inputIndex)
+                        if (_mappings[outputIndex] == inputIndex)
                         {
-                            var inputBufferOffset = n*bytesPerSample;
-                            var outputBufferOffset = offset + outputIndex*bytesPerSample;
+                            var inputBufferOffset = n*_bytesPerSample;
+                            var outputBufferOffset = offset + outputIndex*_bytesPerSample;
                             int sample = 0;
                             while (sample < sampleFramesRequested && inputBufferOffset < bytesRead)
                             {
-                                Array.Copy(inputBuffer, inputBufferOffset, buffer, outputBufferOffset, bytesPerSample);
+                                Array.Copy(_inputBuffer, inputBufferOffset, buffer, outputBufferOffset, _bytesPerSample);
                                 outputBufferOffset += outputBytesPerFrame;
                                 inputBufferOffset += inputBytesPerFrame;
                                 sample++;
@@ -106,7 +106,7 @@ namespace SoundGenerator.Store
                             // clear the end
                             while (sample < sampleFramesRequested)
                             {
-                                Array.Clear(buffer, outputBufferOffset, bytesPerSample);
+                                Array.Clear(buffer, outputBufferOffset, _bytesPerSample);
                                 outputBufferOffset += outputBytesPerFrame;
                                 sample++;
                             }
@@ -124,7 +124,7 @@ namespace SoundGenerator.Store
         /// </summary>
         public new WaveFormat WaveFormat
         {
-            get { return waveFormat; }
+            get { return _waveFormat; }
         }
 
         public new void ConnectInputToOutput(int inputChannel, int outputChannel)
@@ -137,7 +137,7 @@ namespace SoundGenerator.Store
             {
                 throw new ArgumentException("Invalid output channel");
             }
-            mappings[outputChannel] = inputChannel;
+            _mappings[outputChannel] = inputChannel;
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace SoundGenerator.Store
         /// </summary>
         public new int InputChannelCount
         {
-            get { return inputChannelCount; }
+            get { return _inputChannelCount; }
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace SoundGenerator.Store
         /// </summary>
         public new int OutputChannelCount
         {
-            get { return outputChannelCount; }
+            get { return _outputChannelCount; }
         }
     }
 }
